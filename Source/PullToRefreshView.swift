@@ -46,7 +46,7 @@ public class PullToRefreshView: UIView {
             if self.state == oldValue {
                 return
             }
-            switch self.state {
+            switch self.state { 
             case .Stop:
                 stopAnimating()
             case .Finish:
@@ -109,7 +109,9 @@ public class PullToRefreshView: UIView {
    
     public override func layoutSubviews() {
         super.layoutSubviews()
-        self.arrow.center = CGPointMake(self.frame.size.width / 2, self.frame.size.height / 2)
+        if let scrollView = superview as? UIScrollView {
+            self.arrow.center = CGPointMake(self.frame.size.width / 2, (self.frame.size.height - scrollView.contentInset.top) / 2)
+        }
         self.arrow.frame = CGRectOffset(arrow.frame, 0, 0)
         self.indicator.center = self.arrow.center
     }
@@ -157,7 +159,7 @@ public class PullToRefreshView: UIView {
         }
         
         // Pulling State Check
-        let offsetY = scrollView.contentOffset.y
+        let offsetY = scrollView.contentOffset.y + scrollView.contentInset.top
         
         // Alpha set
         if PullToRefreshConst.alpha {
