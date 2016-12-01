@@ -14,17 +14,17 @@ public extension UIScrollView {
         return pullToRefreshView as? PullToRefreshView
     }
 
-    public func addPullRefreshHandler(refreshCompletion :(Void -> Void)?) {
-        self.addPullRefresh(refreshCompletion)
+    public func addPullRefreshHandler(refreshCompletion :((Void -> Void)?), customTopInset:CGFloat = 0) {
+        self.addPullRefresh(refreshCompletion, customTopInset: customTopInset)
     }
     
     public func addPushRefreshHandler(refreshCompletion :(Void -> Void)?) {
         self.addPushRefresh(refreshCompletion)
     }
     
-    private func addPullRefresh(refreshCompletion :((Void -> Void)?), options: PullToRefreshOption = PullToRefreshOption()) {
-        let refreshViewFrame = CGRectMake(0, -PullToRefreshConst.height, self.frame.size.width, PullToRefreshConst.height)
-        let refreshView = PullToRefreshView(options: options, frame: refreshViewFrame, refreshCompletion: refreshCompletion)
+    private func addPullRefresh(refreshCompletion :((Void -> Void)?), customTopInset:CGFloat = 0, options: PullToRefreshOption = PullToRefreshOption()) {
+        let refreshViewFrame = CGRectMake(0, -PullToRefreshConst.height, self.frame.size.width, PullToRefreshConst.height + customTopInset)
+        let refreshView = PullToRefreshView(options: options, frame: refreshViewFrame, customTopInset: customTopInset, refreshCompletion: refreshCompletion)
         refreshView.tag = PullToRefreshConst.pullTag
         addSubview(refreshView)
     }

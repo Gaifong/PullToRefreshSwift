@@ -29,6 +29,7 @@ public class PullToRefreshView: UIView {
     private var scrollViewInsets: UIEdgeInsets = UIEdgeInsetsZero
     private var refreshCompletion: (Void -> Void)?
     private var pull: Bool = true
+    private var customTopInset:CGFloat = 0
     
     private var positionY:CGFloat = 0 {
         didSet {
@@ -79,7 +80,10 @@ public class PullToRefreshView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public init(options: PullToRefreshOption, frame: CGRect, refreshCompletion :(Void -> Void)?, down:Bool=true) {
+    public init(options: PullToRefreshOption, frame: CGRect, customTopInset:CGFloat? = nil, refreshCompletion :(Void -> Void)?, down:Bool=true) {
+        if let customTopInset = customTopInset {
+            self.customTopInset = customTopInset
+        }
         self.options = options
         self.refreshCompletion = refreshCompletion
 
@@ -109,9 +113,7 @@ public class PullToRefreshView: UIView {
    
     public override func layoutSubviews() {
         super.layoutSubviews()
-        if let scrollView = superview as? UIScrollView {
-            self.arrow.center = CGPointMake(self.frame.size.width / 2, (self.frame.size.height - scrollView.contentInset.top) / 2)
-        }
+        self.arrow.center = CGPointMake(self.frame.size.width / 2, (self.frame.size.height - customTopInset) / 2)
         self.arrow.frame = CGRectOffset(arrow.frame, 0, 0)
         self.indicator.center = self.arrow.center
     }
@@ -159,7 +161,7 @@ public class PullToRefreshView: UIView {
         }
         
         // Pulling State Check
-        let offsetY = scrollView.contentOffset.y + scrollView.contentInset.top
+        let offsetY = scrollView.contentOffset.y + self.customTopInset
         
         // Alpha set
         if PullToRefreshConst.alpha {
@@ -174,13 +176,15 @@ public class PullToRefreshView: UIView {
             if !self.pull {
                 return
             }
-            print(offsetY)
-            print(self.frame.size.height)
-            if offsetY < -self.frame.size.height {
+            print("offset = \(offsetY)")
+            print("Height = \(-self.frame.size.height + self.customTopInset)")
+            if offsetY < -self.frame.size.height + self.customTopInset {
                 // pulling or refreshing
                 if scrollView.dragging == false && self.state != .Refreshing { //release the finger
+                    print("Refreshing")
                     self.state = .Refreshing //startAnimating
                 } else if self.state != .Refreshing { //reach the threshold
+                    print("Triggered")
                     self.state = .Triggered
                 }
             } else if self.state == .Triggered {
