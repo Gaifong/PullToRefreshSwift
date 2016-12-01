@@ -16,12 +16,13 @@ public extension UIScrollView {
         }
     }
 
-    public func addPullToRefresh(refreshCompletion :(() -> ())) {
-        self.addPullToRefresh(options: PullToRefreshOption(), refreshCompletion: refreshCompletion)
+    public func addPullToRefresh(refreshCompletion :(() -> ()), customTopInset:CGFloat = 0) {
+        self.addPullToRefresh(options: PullToRefreshOption(), customTopInset: customTopInset, refreshCompletion: refreshCompletion)
     }
     
-    public func addPullToRefresh(options options: PullToRefreshOption = PullToRefreshOption(), refreshCompletion :(() -> ())) {
-        let refreshViewFrame = CGRectMake(0, -PullToRefreshConst.height, self.frame.size.width, PullToRefreshConst.height)
+    public func addPullToRefresh(options options: PullToRefreshOption = PullToRefreshOption(), customTopInset:CGFloat = 0, refreshCompletion :(() -> ())) {
+        removePullToRefresh()
+        let refreshViewFrame = CGRectMake(0,  -customTopInset, self.frame.size.width, PullToRefreshConst.height)
         let refreshView = PullToRefreshView(options: options, frame: refreshViewFrame, refreshCompletion: refreshCompletion)
         refreshView.tag = PullToRefreshConst.tag
         addSubview(refreshView)
@@ -48,6 +49,14 @@ public extension UIScrollView {
                     frame.origin.y = -PullToRefreshConst.height
                     pullToRefreshView?.frame = frame
                 }
+            }
+        }
+    }
+    
+    func removePullToRefresh() {
+        for subView in subviews {
+            if let subView = subView as? PullToRefreshView {
+                subView.removeFromSuperview()
             }
         }
     }
